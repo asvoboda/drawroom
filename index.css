@@ -1,0 +1,24 @@
+#room-content {
+	float: left;
+	width: 100px;
+	border-right: 1px solid black;
+	height: 300px;
+	padding: 10px;
+	overflow: scroll-y;
+	position: absolute;
+}
+
+#roomname {
+	width: 80px;
+}
+
+#cursors {
+	position:relative;
+}
+
+#cursors .cursor{
+	position: absolute;
+	width: 2px;
+	height: 2px;
+	background-color: #000000;
+}
