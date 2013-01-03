@@ -34,11 +34,12 @@ io.sockets.on('connection', function (socket) {
 		socket.id = UUID();
 		users[socket.id] = username;
 		// echo to room 1 that a person has connected to their room
-		io.sockets.emit('updatechat', 'SERVER', username + ' has connected to this room', timestamp);		
+		io.sockets.emit('updatechat', 'SERVER', username + ' has connected', timestamp);
+		io.sockets.emit('users', users);
 		console.log("Added user " + socket.username + " with id " + socket.id);
 	});
 	
-	socket.on('sendchat', function (data, timestamp) {
+	socket.on('sendchat', function (data) {
 		var d = new Date();
 		var timestamp = d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();		
 		io.sockets.emit('updatechat', socket.username, data, timestamp);

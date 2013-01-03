@@ -6,9 +6,18 @@ var cursors = {};
 
 var socket = io.connect();
 var id;
+var myname;
 
 socket.on('connect', function() {
-	socket.emit('adduser', prompt("What's your handle?"));
+	myname = prompt("What's your handle?");
+	socket.emit('adduser', myname);
+});
+
+socket.on('users', function(users_obj) {
+	for(var key in users){
+		users[key]['username'] = users_obj[key].username;
+	}
+	users = users_obj;
 });
 
 // listener, whenever the server emits 'updatechat', this updates the chat body
@@ -56,7 +65,7 @@ $(function() {
 	socket.on('moving', function (data) {
 		id = data.id;
 		if(!cursors[data.id]){
-			cursors[data.id] = $('<div class="cursor">').appendTo('#cursors');
+			cursors[data.id] = $('<div class="cursor">' + data.username + '</div>').appendTo('#cursors');
 		}
 		
 		cursors[data.id].css({
@@ -91,7 +100,8 @@ $(function() {
 				'x': e.pageX,
 				'y': e.pageY,
 				'drawing': drawing,
-				'id': id
+				'id': id,
+				'username': myname
 			});
 			lastEmit = $.now();
 		}

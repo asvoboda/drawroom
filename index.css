@@ -9,6 +9,11 @@
 	background-color: #000000;
 }
 
+.cursor {
+	font-size: 8px;
+	margin-left:3px;
+}
+
 #conversation-content {
 	float: left;
 	width: 20%;
@@ -30,4 +35,8 @@
 
 canvas {
 	background-image: url("linedpaper.png");
+}
+
+body {
+	margin: 0;
 }
