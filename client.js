@@ -11,30 +11,40 @@ socket.on('connect', function() {
 	socket.emit('adduser', prompt("What's your handle?"));
 });
 
-function switchRoom(room) {
-	socket.emit('switchRoom', room);
-}
-
-// listener, whenever the server emits 'updaterooms', this updates the room the client is in
-socket.on('updaterooms', function(rooms, current_room) {
-	$('#rooms').empty();
-	$.each(rooms, function(key, value) {
-		if(value === current_room){
-			$('#rooms').append('<div>' + value + '</div>');
-		}
-		else {
-			$('#rooms').append('<div><a href="#" onclick="switchRoom(\''+value+'\')">' + value + '</a></div>');
-		}
-	});
-});	
-
-socket.on('newroom', function(newroom) {
-	$('#rooms').append('<div><a href="#" onclick="switchRoom(\''+newroom+'\')">' + newroom + '</a></div>');
-});	
+// listener, whenever the server emits 'updatechat', this updates the chat body
+socket.on('updatechat', function (username, data, timestamp) {
+	if(timestamp === undefined){
+		timestamp = "";
+	}else{
+		timestamp = timestamp + "  ";
+	}
+	$('#conversation').append(timestamp + '<b>'+username + ':</b> ' + data + '<br>');
+	$('#conversation').scrollTop(10000);
+});
 
 $(function() {
 	var canvas = $('#paper');
 	var context = canvas[0].getContext('2d');
+	
+	$('#data').focus();
+
+	// when the client clicks SEND
+	$('#datasend').click( function() {
+		var message = $('#data').val();
+		$('#data').val('');
+		// tell server to execute 'sendchat' and send along one parameter
+		socket.emit('sendchat', message);
+		$('#data').focus();
+	});
+
+	// when the client hits ENTER on their keyboard
+	$('#data').keypress(function(e) {
+		if(e.which == 13) {
+			$(this).blur();
+			$('#datasend').focus().click();
+			$('#data').focus();
+		}
+	});	
 
 	if(!('getContext' in document.createElement('canvas'))) {
 		alert("Your browser does not support canvas");
@@ -42,22 +52,6 @@ $(function() {
 	}
 	
 	var prev = {};
-	
-	$('#roomname').keypress(function(e) {
-		if(e.which === 13) {
-			$(this).blur();
-			$('#addnewroom').focus().click();
-			$('#roomname').focus();
-		}
-	});		
-	$('#addnewroom').click( function() {
-		var message = $('#roomname').val();
-		$('#roomname').val('');
-		if(message !== ""){
-			socket.emit('addRoom', message);
-		}
-		$('#roomname').focus();
-	});		
 
 	socket.on('moving', function (data) {
 		id = data.id;

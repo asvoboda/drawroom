@@ -1,17 +1,3 @@
-#room-content {
-	float: left;
-	width: 100px;
-	border-right: 1px solid black;
-	height: 300px;
-	padding: 10px;
-	overflow: scroll-y;
-	position: absolute;
-}
-
-#roomname {
-	width: 80px;
-}
-
 #cursors {
 	position:relative;
 }
@@ -21,4 +7,27 @@
 	width: 2px;
 	height: 2px;
 	background-color: #000000;
+}
+
+#conversation-content {
+	float: left;
+	width: 20%;
+	height: 90%;
+	position: absolute;
+	overflow: scroll-y;
+	padding: 10px;
+	float: right;
+}
+
+#conversation {
+	height: 90%;
+	overflow-y: scroll;
+}
+
+#data {
+	width: 200px;
+}
+
+canvas {
+	background-image: url("linedpaper.png");
 }

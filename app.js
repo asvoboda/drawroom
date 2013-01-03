@@ -24,44 +24,30 @@ io.set('log level', 1);
 // users which are currently connected to the chat
 var users = {};
 
-// rooms which are currently available in chat
-var rooms = ['RoomA','RoomB'];
-
 io.sockets.on('connection', function (socket) {
 
 	// when the client emits 'adduser', this listens and executes
 	socket.on('adduser', function(username){
+		var d = new Date();
+		var timestamp = d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();		
 		socket.username = username;
-		socket.room = rooms[0];
 		socket.id = UUID();
 		users[socket.id] = username;
-		socket.join(rooms[0]);
-		io.sockets.emit('updaterooms', rooms, socket.room);
-		socket.emit('updaterooms', rooms, rooms[0]);
-		console.log(rooms);
-		console.log("Added user " + socket.username + " with id " + socket.id + " to room " + rooms[0]);
+		// echo to room 1 that a person has connected to their room
+		io.sockets.emit('updatechat', 'SERVER', username + ' has connected to this room', timestamp);		
+		console.log("Added user " + socket.username + " with id " + socket.id);
 	});
-
 	
-	socket.on('addRoom', function(newroom) {
-		rooms.push(newroom);
-		io.sockets.emit('newroom', newroom);
-		console.log("Added Room: " + newroom);
+	socket.on('sendchat', function (data, timestamp) {
+		var d = new Date();
+		var timestamp = d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();		
+		io.sockets.emit('updatechat', socket.username, data, timestamp);
 	});	
-
-	socket.on('switchRoom', function(newroom){
-		socket.leave(socket.room);
-		socket.join(newroom);
-		console.log("User " + socket.username + " id " + socket.id + " trying to switch to room " + newroom + " from " + socket.room);
-		socket.room = newroom;
-		socket.emit('updaterooms', rooms, newroom);
-		console.log("User " + socket.username + " id " + socket.id + " switched to room " + socket.room);
-	});
 	
 	// Start listening for mouse move events
     socket.on('mousemove', function (data) {
 		//send to everyone but the originating client
-        io.sockets.in(socket.room).emit('moving', data);
+        io.sockets.emit('moving', data);
     });
 
 	// when the user disconnects.. perform this
@@ -69,9 +55,8 @@ io.sockets.on('connection', function (socket) {
 		// remove the username from global usernames list
 		delete users[socket.id];
 		// update list of users client side
-		
+		socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected');
 		io.sockets.emit('updateusers', users);
 		console.log("User " + socket.username + " left");
-		socket.leave(socket.room);
 	});
 });
