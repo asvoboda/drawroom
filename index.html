@@ -2,10 +2,13 @@
 <html>
     <head>
 		<script src="/socket.io/socket.io.js"></script>
-        <script type="text/javascript" src="lib/jquery-1.7.2.min.js"></script>	
-		<link rel="stylesheet" type="text/css" href="index.css" />
+        <script type="text/javascript" src="lib/jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="lib/colorpicker/js/colorpicker.js"></script>
 		
-		<script type="text/javascript" src="client.js"></script>	
+		<link rel="stylesheet" type="text/css" href="index.css" />
+		<link rel="stylesheet" type="text/css" href="lib/colorpicker/css/colorpicker.css" />
+		
+		<script type="text/javascript" src="client.js"></script>
 	</head>
 	<body>
 		
@@ -16,7 +19,11 @@
 			<div id="conversation"></div>
 			<input id="data"/>
 			<input type="button" id="datasend" value="send" />
-		</div>	
+		</div>
+		
+		<div id="toolbox">
+			<input id="color-selector"></input>
+		</div>
 		
 		<canvas id="paper" width="1900" height="1000">
 		</canvas>

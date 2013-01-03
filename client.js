@@ -8,16 +8,29 @@ var socket = io.connect();
 var id;
 var myname;
 
-socket.on('connect', function() {
-	myname = prompt("What's your handle?");
-	socket.emit('adduser', myname);
-});
+function GUID ()
+{
+    var S4 = function ()
+    {
+        return Math.floor(
+                Math.random() * 0x10000 /* 65536 */
+            ).toString(16);
+    };
 
-socket.on('users', function(users_obj) {
-	for(var key in users){
-		users[key]['username'] = users_obj[key].username;
-	}
-	users = users_obj;
+    return (
+            S4() + S4() + "-" +
+            S4() + "-" +
+            S4() + "-" +
+            S4() + "-" +
+            S4() + S4() + S4()
+        );
+}
+
+
+socket.on('connect', function() {
+	id = GUID();
+	myname = prompt("What's your handle?");
+	socket.emit('adduser', myname, id);
 });
 
 // listener, whenever the server emits 'updatechat', this updates the chat body
@@ -34,6 +47,24 @@ socket.on('updatechat', function (username, data, timestamp) {
 $(function() {
 	var canvas = $('#paper');
 	var context = canvas[0].getContext('2d');
+	
+	$('#color-selector').val('#ff0000');
+	$('#color-selector').css('backgroundColor', '#ff0000');
+	$('#color-selector').ColorPicker({
+		color: '#ff0000',
+		onShow: function (colpkr) {
+			$(colpkr).fadeIn(500);
+			return false;
+		},
+		onHide: function (colpkr) {
+			$(colpkr).fadeOut(500);
+			return false;
+		},
+		onChange: function (hsb, hex, rgb) {
+			$('#color-selector').css('backgroundColor', '#' + hex);
+			$('#color-selector').val('#' + hex);
+		}
+	});
 	
 	$('#data').focus();
 
@@ -63,22 +94,25 @@ $(function() {
 	var prev = {};
 
 	socket.on('moving', function (data) {
-		id = data.id;
-		if(!cursors[data.id]){
-			cursors[data.id] = $('<div class="cursor">' + data.username + '</div>').appendTo('#cursors');
+		if(data.id !== undefined){
+			if(!cursors[data.id]){
+				cursors[data.id] = $('<div class="cursor">' + data.username + '</div>').appendTo('#cursors');
+			}
+			
+			cursors[data.id].css({
+				'left': data.x,
+				'top': data.y,
+				'background-color': data.color
+			});
+			
+			if(data.drawing && users[data.id]) {
+				console.log(data.username + " " + data.id);
+				drawLine(users[data.id].x, users[data.id].y, data.x, data.y, data.color);
+			}
+			
+			users[data.id] = data;
+			users[data.id].updated = $.now();
 		}
-		
-		cursors[data.id].css({
-			'left': data.x,
-			'top': data.y
-		});
-		
-		if(data.drawing && users[data.id]) {
-			drawLine(users[data.id].x, users[data.id].y, data.x, data.y);
-		}
-		
-		users[data.id] = data;
-		users[data.id].updated = $.now();
 	});
 	
 	canvas.on('mousedown', function(e) {
@@ -101,22 +135,26 @@ $(function() {
 				'y': e.pageY,
 				'drawing': drawing,
 				'id': id,
-				'username': myname
+				'username': myname,
+				'color': $('#color-selector').val()
 			});
 			lastEmit = $.now();
 		}
 		
 		if(drawing){
-			drawLine(prev.x, prev.y, e.pageX, e.pageY);
+			//drawLine(prev.x, prev.y, e.pageX, e.pageY);
 			
 			prev.x = e.pageX;
 			prev.y = e.pageY;
 		}
 	});
 	
-	function drawLine(from_x, from_y, to_x, to_y) {
+	function drawLine(from_x, from_y, to_x, to_y, color) {
+		context.beginPath();
 		context.moveTo(from_x, from_y);
 		context.lineTo(to_x, to_y);
+		context.strokeStyle = color;
 		context.stroke();
+		
 	}	
 });

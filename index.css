@@ -33,6 +33,15 @@
 	width: 200px;
 }
 
+#toolbox {
+	position: absolute;
+	left: 250px;
+}
+
+#color-selector {
+	width: 50px;
+}
+
 canvas {
 	background-image: url("linedpaper.png");
 }

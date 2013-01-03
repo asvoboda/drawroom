@@ -1,6 +1,5 @@
 var app = require('express').createServer();
 var io = require('socket.io').listen(app);
-var UUID = require('node-uuid');
 var port = process.env.PORT || 4004;
 
 
@@ -27,15 +26,14 @@ var users = {};
 io.sockets.on('connection', function (socket) {
 
 	// when the client emits 'adduser', this listens and executes
-	socket.on('adduser', function(username){
+	socket.on('adduser', function(username, id){
 		var d = new Date();
 		var timestamp = d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();		
 		socket.username = username;
-		socket.id = UUID();
+		socket.id = id;
 		users[socket.id] = username;
 		// echo to room 1 that a person has connected to their room
 		io.sockets.emit('updatechat', 'SERVER', username + ' has connected', timestamp);
-		io.sockets.emit('users', users);
 		console.log("Added user " + socket.username + " with id " + socket.id);
 	});
 	
