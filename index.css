@@ -42,6 +42,10 @@
 	width: 50px;
 }
 
+#width {
+	width: 28px;
+}
+
 canvas {
 	background-image: url("linedpaper.png");
 }

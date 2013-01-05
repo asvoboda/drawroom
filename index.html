@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html>
     <head>
+		<title>Drawing Room</title>
 		<script src="/socket.io/socket.io.js"></script>
         <script type="text/javascript" src="lib/jquery-1.7.2.min.js"></script>
 		<script type="text/javascript" src="lib/colorpicker/js/colorpicker.js"></script>
+		<script type="text/javascript" src="lib/modernizr.custom.54495.js"></script>
+		
 		
 		<link rel="stylesheet" type="text/css" href="index.css" />
 		<link rel="stylesheet" type="text/css" href="lib/colorpicker/css/colorpicker.css" />
@@ -23,6 +26,12 @@
 		
 		<div id="toolbox">
 			<input id="color-selector"></input>
+			<input type="button" id="pencil" value="pencil" />
+			<!--<input type="button" id="crayon" value="crayon" />-->
+			<input type="button" id="brush" value="brush" />
+			<input type="button" id="clear" value="clear" />
+			<input type="button" id="eraser" value="eraser" />
+			<input id="width" value="1"/>
 		</div>
 		
 		<canvas id="paper" width="1900" height="1000">

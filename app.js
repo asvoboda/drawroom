@@ -48,13 +48,20 @@ io.sockets.on('connection', function (socket) {
 		//send to everyone but the originating client
         io.sockets.emit('moving', data);
     });
+	
+    socket.on('clear', function () {
+		//send to everyone but the originating client
+        io.sockets.emit('clearcanvas');
+    });	
 
 	// when the user disconnects.. perform this
 	socket.on('disconnect', function(){
+		var d = new Date();
+		var timestamp = d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();		
 		// remove the username from global usernames list
 		delete users[socket.id];
 		// update list of users client side
-		socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected');
+		socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected', timestamp);
 		io.sockets.emit('updateusers', users);
 		console.log("User " + socket.username + " left");
 	});
