@@ -92,6 +92,11 @@ $(function() {
 	var canvas = $('#paper');
 	var context = canvas[0].getContext('2d');
 	
+	if(!('getContext' in document.createElement('canvas'))) {
+		alert("Your browser does not support canvas");
+		return false;
+	}	
+	
 	$('#color-selector').val(currentColor);
 	$('#color-selector').css('backgroundColor', currentColor);
 	$('#color-selector').ColorPicker({
@@ -125,7 +130,7 @@ $(function() {
 	
 	$('#pencil').click( function() {
 		tool = "pencil";
-	});	
+	});		
 	$('#crayon').click( function() {
 		tool = "crayon";
 	});	
@@ -139,6 +144,9 @@ $(function() {
 	$('#eraser').click( function() {
 		tool = "eraser";
 	});	
+	$('#save').click( function() {
+		window.open(save(), '_blank', 'width=800,height=600')
+	});		
 
 	$('#width').bind('keyup', function() { 
 		width = $(this).val() // get the current value of the input field.
@@ -152,11 +160,6 @@ $(function() {
 			$('#data').focus();
 		}
 	});	
-
-	if(!('getContext' in document.createElement('canvas'))) {
-		alert("Your browser does not support canvas");
-		return false;
-	}
 	
 	var prev = {};
 
@@ -188,8 +191,17 @@ $(function() {
 	canvas.on(mouseDownEvent, function(e) {
 		e.preventDefault();
 		drawing = true;
-		prev.x = e.pageX;
-		prev.y = e.pageY;
+		
+		var target;
+		if (touchSupported) {
+			target = event.originalEvent.touches[0]
+		}
+		else {
+			target = event;
+		}		
+		
+		prev.x = target.pageX;
+		prev.y = target.pageY;
 	});
 	
 	$(document).bind(mouseUpEvent + ' mouseleave', function(){
@@ -199,10 +211,18 @@ $(function() {
 	var lastEmit = $.now();
 	
 	$(document).on(mouseMoveEvent, function(e){
-		if($.now() - lastEmit > 30){
+		var target;
+		if (touchSupported) {
+			target = event.originalEvent.touches[0]
+		}
+		else {
+			target = event;
+		}
+		
+		if($.now() - lastEmit > 30){		
 			socket.emit('mousemove', {
-				'x': e.pageX,
-				'y': e.pageY,
+				'x': target.pageX,
+				'y': target.pageY,
 				'drawing': drawing,
 				'id': id,
 				'username': myname,
@@ -216,10 +236,26 @@ $(function() {
 		if(drawing){
 			//drawLine(prev.x, prev.y, e.pageX, e.pageY);
 			
-			prev.x = e.pageX;
-			prev.y = e.pageY;
+			var target;
+			if (touchSupported) {
+				target = event.originalEvent.touches[0]
+			}
+			else {
+				target = event;
+			}		
+			
+			prev.x = target.pageX;
+			prev.y = target.pageY;
 		}
 	});
+	
+	function save(){
+		var dataString = canvas.get(0).toDataURL("image/png");
+		//var index = dataString.indexOf( "," )+1;
+		//dataString = dataString.substring( index );
+
+		return dataString;		
+	}
 	
 	function drawLine(from_x, from_y, to_x, to_y, color, tool, width) {
 
@@ -244,7 +280,6 @@ $(function() {
 			}
 		}else if(tool === "pencil"){
 			context.beginPath();
-
 			context.moveTo(from_x, from_y);
 			context.lineTo(to_x, to_y);
 			context.lineJoin = 'round';
@@ -255,13 +290,12 @@ $(function() {
 			context.stroke();	
 			
 		}else if(tool === "eraser"){
-	
 			context.beginPath();
-			
-			context.lineWidth = width;
 			context.moveTo(from_x, from_y);
 			context.lineTo(to_x, to_y);
 			context.lineJoin = 'round';
+			context.lineCap = 'round';
+			context.lineWidth = width;
 			context.fillStyle = "rgba(0,0,0,1)";
 			context.globalCompositeOperation = "destination-out";				
 			context.stroke();		
