@@ -95,6 +95,8 @@ $(function() {
 		return false;
 	}
 	
+	//canvas.bind( mouseDownEvent, onCanvasMouseDown() );
+	
 	$('#data').focus();
 
 	// when the client clicks SEND
@@ -166,6 +168,8 @@ $(function() {
 		context.clear();
 	});
 	
+	var lastEmit = $.now();
+	
 	canvas.on(mouseDownEvent, function(e) {
 		e.preventDefault();
 		drawing = true;
@@ -186,7 +190,7 @@ $(function() {
 		drawing = false;
 	});
 	
-	var lastEmit = $.now();
+	
 	
 	$(document).on(mouseMoveEvent, function(e){
 		var target;
@@ -214,18 +218,42 @@ $(function() {
 		if(drawing){
 			//drawLine(prev.x, prev.y, e.pageX, e.pageY);
 			
-			var target;
-			if (touchSupported) {
-				target = event.originalEvent.touches[0]
-			}
-			else {
-				target = event;
-			}		
-			
 			prev.x = target.pageX;
 			prev.y = target.pageY;
 		}
 	});
+	
+	/*
+	onCanvasMouseDown = function () {
+		return function(event) {
+			mouseMoveHandler = onCanvasMouseMove()
+			mouseUpHandler = onCanvasMouseUp()
+
+			$(document).bind( mouseMoveEvent, mouseMoveHandler );
+			$(document).bind( mouseUpEvent, mouseUpHandler );
+
+			updateMousePosition( event );
+			renderFunction( event );
+		}
+	}
+
+	onCanvasMouseMove = function () {
+		return function(event) {
+			renderFunction( event );
+			event.preventDefault();
+			return false;
+		}
+	}
+
+	onCanvasMouseUp = function (event) {
+		return function(event) {
+			$(document).unbind( mouseMoveEvent, mouseMoveHandler );
+			$(document).unbind( mouseUpEvent, mouseUpHandler );
+
+			mouseMoveHandler = null;
+			mouseUpHandler = null;
+		}
+	}*/
 	
 	function save(){
 		var dataString = canvas.get(0).toDataURL("image/png");
