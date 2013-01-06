@@ -8,10 +8,8 @@ var socket = io.connect();
 var id;
 var myname;
 var tool = "pencil";
-var currentColor = '#ff0000';
-var crayonBrush = new Image();
+var currentColor;
 var width = 1;
-crayonBrush.src = "crayon-texture.png";
 
 var brush = new Image();
 brush.src = "brush2.png";
@@ -96,26 +94,6 @@ $(function() {
 		alert("Your browser does not support canvas");
 		return false;
 	}	
-	
-	$('#color-selector').val(currentColor);
-	$('#color-selector').css('backgroundColor', currentColor);
-	$('#color-selector').ColorPicker({
-		color: currentColor,
-		onShow: function (colpkr) {
-			$(colpkr).fadeIn(500);
-			return false;
-		},
-		onHide: function (colpkr) {
-			$(colpkr).fadeOut(500);
-			$('#data').focus();
-			return false;
-		},
-		onChange: function (hsb, hex, rgb) {
-			$('#color-selector').css('backgroundColor', '#' + hex);
-			$('#color-selector').val('#' + hex);
-			currentColor = $('#color-selector').val();
-		}
-	});
 	
 	$('#data').focus();
 
@@ -226,7 +204,7 @@ $(function() {
 				'drawing': drawing,
 				'id': id,
 				'username': myname,
-				'color': currentColor,
+				'color': $.minicolors.rgbString($('#color-selector')),
 				'tool': tool,
 				'width': width
 			});
