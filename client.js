@@ -172,10 +172,10 @@ $(function() {
 		
 		var target;
 		if (touchSupported) {
-			target = event.originalEvent.touches[0]
+			target = e.originalEvent.touches[0]
 		}
 		else {
-			target = event;
+			target = e;
 		}		
 		
 		prev.x = target.pageX;
