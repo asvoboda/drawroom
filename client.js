@@ -93,7 +93,7 @@ $(function() {
 	if(!('getContext' in document.createElement('canvas'))) {
 		alert("Your browser does not support canvas");
 		return false;
-	}	
+	}
 	
 	$('#data').focus();
 
@@ -191,10 +191,10 @@ $(function() {
 	$(document).on(mouseMoveEvent, function(e){
 		var target;
 		if (touchSupported) {
-			target = event.originalEvent.touches[0]
+			target = e.originalEvent.touches[0]
 		}
 		else {
-			target = event;
+			target = e;
 		}
 		
 		if($.now() - lastEmit > 30){		
