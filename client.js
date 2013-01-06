@@ -208,7 +208,7 @@ $(function() {
 				'drawing': drawing,
 				'id': id,
 				'username': myname,
-				'color': $.minicolors.rgbString($('#color-selector')),
+				'color': $('#color-selector').val(),
 				'tool': tool,
 				'width': width
 			});
